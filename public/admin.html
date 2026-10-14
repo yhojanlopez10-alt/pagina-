@@ -231,7 +231,11 @@
 
     catForm.addEventListener("submit", async (e) => {
       e.preventDefault();
-      const body = { name: catName.value, image: catImage.value || null };
+      if (!catImage.value) {
+        showToast("Primero sube una imagen");
+        return;
+      }
+      const body = { name: catName.value, image: catImage.value };
       const id = catEditId.value;
       try {
         const res = await fetch(id ? `/api/categories/${id}` : "/api/categories", {
@@ -367,12 +371,17 @@
 
     prodForm.addEventListener("submit", async (e) => {
       e.preventDefault();
+      const imageUrl = document.getElementById("image").value;
+      if (!imageUrl) {
+        showToast("Primero sube una imagen");
+        return;
+      }
       const body = {
         name: document.getElementById("name").value,
         category: document.getElementById("category").value,
         price: Number(document.getElementById("price").value),
         badge: document.getElementById("badge").value || null,
-        image: document.getElementById("image").value
+        image: imageUrl
       };
       const id = prodEditId.value;
       try {
