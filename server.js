@@ -10,25 +10,26 @@ const PORT = process.env.PORT || 3000;
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-const uploadsDir = path.join(__dirname, "public", "uploads");
-if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, uploadsDir),
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    const name = Date.now() + "-" + Math.round(Math.random() * 1e6) + ext;
-    cb(null, name);
-  }
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.post("/api/upload", upload.single("image"), (req, res) => {
+app.post("/api/upload", upload.single("image"), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No se envió archivo" });
-  res.json({ url: "/uploads/" + req.file.filename });
+  try {
+    const ext = path.extname(req.file.originalname);
+    const fileName = Date.now() + "-" + Math.round(Math.random() * 1e6) + ext;
+    const { error } = await supabase.storage.from("productos").upload(fileName, req.file.buffer, {
+      contentType: req.file.mimetype
+    });
+    if (error) throw error;
+    const { data } = supabase.storage.from("productos").getPublicUrl(fileName);
+    res.json({ url: data.publicUrl });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 app.get("/api/products", async (req, res) => {
