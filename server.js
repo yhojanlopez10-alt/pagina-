@@ -21,12 +21,13 @@ app.post("/api/upload", upload.single("image"), async (req, res) => {
   try {
     const ext = path.extname(req.file.originalname);
     const fileName = Date.now() + "-" + Math.round(Math.random() * 1e6) + ext;
-    const { error } = await supabase.storage.from("productos").upload(fileName, req.file.buffer, {
+    const { data, error } = await supabase.storage.from("productos").upload(fileName, req.file.buffer, {
       contentType: req.file.mimetype
     });
     if (error) throw error;
-    const { data } = supabase.storage.from("productos").getPublicUrl(fileName);
-    res.json({ url: data.publicUrl });
+    const { data: urlData } = supabase.storage.from("productos").getPublicUrl(fileName);
+    if (!urlData || !urlData.publicUrl) throw new Error("No se pudo generar la URL pública");
+    res.json({ url: urlData.publicUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
