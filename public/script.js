@@ -300,7 +300,8 @@ document.querySelectorAll(".nav__link").forEach((link) => {
 async function loadProducts() {
   try {
     const res = await fetch("/api/products");
-    products = await res.json();
+    const data = await res.json();
+    products = Array.isArray(data) ? data : [];
   } catch {
     products = [];
   }

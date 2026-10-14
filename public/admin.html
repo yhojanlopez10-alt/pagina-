@@ -169,7 +169,14 @@
     async function loadCategories() {
       try {
         const res = await fetch("/api/categories");
-        categories = await res.json();
+        const data = await res.json();
+        categories = Array.isArray(data) ? data : [];
+        if (!Array.isArray(data)) {
+          catList.innerHTML = `<p class="empty-msg">⚠️ No se pudo conectar a la base de datos. Verifica la variable DATABASE_URL en Render.</p>`;
+          catEmpty.hidden = true;
+          fillCategorySelect();
+          return;
+        }
         catList.innerHTML = categories.length === 0 ? "" : categories.map(c => `
           <div class="admin-item" id="cat-${c.id}">
             <img src="${c.image || ''}" alt="${c.name}" onerror="this.style.display='none'">
@@ -277,7 +284,14 @@
     async function loadProducts() {
       try {
         const res = await fetch("/api/products");
-        const products = await res.json();
+        const data = await res.json();
+        const products = Array.isArray(data) ? data : [];
+        if (!Array.isArray(data)) {
+          list.innerHTML = `<p class="empty-msg">⚠️ No se pudo conectar a la base de datos.</p>`;
+          countEl.textContent = "0";
+          emptyMsg.hidden = true;
+          return;
+        }
         countEl.textContent = products.length;
         if (products.length === 0) {
           list.innerHTML = "";
