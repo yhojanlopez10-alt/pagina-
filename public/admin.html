@@ -105,6 +105,21 @@
       </div>
 
       <div class="admin-form">
+        <h3>WhatsApp</h3>
+        <form id="whatsappForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="whatsappNumber">Número de WhatsApp (con código de país, sin +)</label>
+              <input type="text" id="whatsappNumber" placeholder="Ej: 584121234567">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Guardar WhatsApp</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-form">
         <h3>Pago Móvil</h3>
         <form id="pagoMovilForm">
           <div class="form-grid">
@@ -491,6 +506,7 @@
         document.getElementById("pmBank").value = s.pago_movil_bank || "";
         document.getElementById("pmHolder").value = s.pago_movil_holder || "";
         document.getElementById("pmCedula").value = s.pago_movil_cedula || "";
+        document.getElementById("whatsappNumber").value = s.whatsapp_number || "";
       } catch {}
     }
 
@@ -527,6 +543,11 @@
         pago_movil_holder: document.getElementById("pmHolder").value,
         pago_movil_cedula: document.getElementById("pmCedula").value
       });
+    });
+
+    document.getElementById("whatsappForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      saveSettings({ whatsapp_number: document.getElementById("whatsappNumber").value });
     });
 
     loadCategories();

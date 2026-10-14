@@ -247,10 +247,13 @@ function closePayment() {
 document.getElementById("paymentClose").addEventListener("click", closePayment);
 paymentOverlay.addEventListener("click", closePayment);
 
+let selectedPaymentMethod = "";
+
 document.querySelectorAll(".payment-option").forEach((btn) => {
   btn.addEventListener("click", () => {
     document.querySelectorAll(".payment-option").forEach((b) => b.classList.remove("selected"));
     btn.classList.add("selected");
+    selectedPaymentMethod = btn.dataset.method;
     const method = paymentMethods[btn.dataset.method];
     const rows = method.rows();
     paymentDetailsContent.innerHTML = `
@@ -278,7 +281,58 @@ function copyText(text, btn) {
 }
 
 document.getElementById("paymentConfirm").addEventListener("click", () => {
-  showToast("¡Pago registrado! Te contactaremos para confirmar tu pedido.");
+  if (cart.length === 0) {
+    showToast("Tu carrito está vacío");
+    closePayment();
+    return;
+  }
+
+  const rate = parseFloat(siteSettings.exchange_rate) || 0;
+  const methodLabel = selectedPaymentMethod === "binance" ? "Binance Pay (USDT)" : "Pago Móvil";
+
+  let msg = "🛍️ *Nuevo pedido — Athenea Store*\n";
+  msg += "━━━━━━━━━━━━━━━━\n\n";
+  msg += "📦 *Productos:*\n";
+
+  cart.forEach((item, i) => {
+    const p = products.find((x) => x.id === item.id);
+    if (!p) return;
+    const subtotal = p.price * item.qty;
+    msg += `${i + 1}. ${p.name}\n`;
+    msg += `   Categoría: ${p.category}\n`;
+    msg += `   Cantidad: ${item.qty}\n`;
+    msg += `   Precio: ${formatPrice(p.price)}\n`;
+    msg += `   Subtotal: ${formatPrice(subtotal)}\n\n`;
+  });
+
+  const totalUSD = cart.reduce((sum, item) => {
+    const p = products.find((x) => x.id === item.id);
+    return sum + (p ? p.price * item.qty : 0);
+  }, 0);
+
+  msg += "━━━━━━━━━━━━━━━━\n";
+  msg += `💰 *Total: ${formatPrice(totalUSD)} USD*\n`;
+
+  if (rate > 0) {
+    const totalBs = totalUSD * rate;
+    msg += ` Bs equivalentes: ${totalBs.toLocaleString("es-VE", { minimumFractionDigits: 2 })} Bs\n`;
+    msg += ` 📌 Tasa del día: ${rate.toFixed(2)} Bs/$\n`;
+  }
+
+  msg += `\n💳 *Método de pago:* ${methodLabel}\n`;
+  msg += "━━━━━━━━━━━━━━━━\n";
+  msg += "\nEscribo una vez realizada la transferencia. 🙏";
+
+  const phone = (siteSettings.whatsapp_number || "").replace(/[^0-9]/g, "");
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+
+  if (phone) {
+    window.open(url, "_blank");
+  } else {
+    copyText(msg, { text: "Copiado" });
+    showToast("Número de WhatsApp no configurado. Pedido copiado.");
+  }
+
   clearCart();
   closePayment();
 });
