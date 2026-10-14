@@ -1,17 +1,4 @@
-const products = [
-  { id: 1, name: "Vestido Floral Verano", category: "mujer", price: 89900, oldPrice: 120000, badge: "-25%", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80" },
-  { id: 2, name: "Camisa Blanca Clásica", category: "hombre", price: 65000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80" },
-  { id: 3, name: "Bolso de Cuero Premium", category: "accesorios", price: 145000, oldPrice: 180000, badge: "Top", image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80" },
-  { id: 4, name: "Zapatillas Urbanas Blancas", category: "calzado", price: 175000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&q=80" },
-  { id: 5, name: "Jean Slim Azul Oscuro", category: "hombre", price: 95000, oldPrice: 115000, badge: "-17%", image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80" },
-  { id: 6, name: "Blusa Seda Elegante", category: "mujer", price: 78000, oldPrice: null, badge: "Nuevo", image: "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=500&q=80" },
-  { id: 7, name: "Reloj Minimalista", category: "accesorios", price: 195000, oldPrice: 250000, badge: "Top", image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500&q=80" },
-  { id: 8, name: "Botas de Cuero café", category: "calzado", price: 210000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&q=80" },
-  { id: 9, name: "Chaqueta Jeans Oversize", category: "mujer", price: 125000, oldPrice: null, badge: "Nuevo", image: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500&q=80" },
-  { id: 10, name: "Sneakers Running Pro", category: "calzado", price: 230000, oldPrice: 280000, badge: "-18%", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500&q=80" },
-  { id: 11, name: "Gafas de Sol Aviador", category: "accesorios", price: 65000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&q=80" },
-  { id: 12, name: "Polo Piqué Premium", category: "hombre", price: 55000, oldPrice: 72000, badge: "-24%", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&q=80" }
-];
+let products = [];
 
 const formatPrice = (n) => "$" + n.toLocaleString("es-CO");
 
@@ -57,7 +44,7 @@ function renderProducts() {
         <div class="product-card__footer">
           <div class="product-card__price">
             ${formatPrice(p.price)}
-            ${p.oldPrice ? `<del>${formatPrice(p.oldPrice)}</del>` : ""}
+            ${p.old_price ? `<del>${formatPrice(p.old_price)}</del>` : ""}
           </div>
           <button class="add-to-cart" onclick="addToCart(${p.id})" aria-label="Agregar al carrito">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -218,9 +205,19 @@ document.querySelectorAll(".nav__link").forEach((link) => {
   });
 });
 
+async function loadProducts() {
+  try {
+    const res = await fetch("/api/products");
+    products = await res.json();
+  } catch {
+    products = [];
+  }
+  renderProducts();
+}
+
 window.addEventListener("scroll", () => {
   document.getElementById("header").classList.toggle("scrolled", window.scrollY > 10);
 });
 
-renderProducts();
+loadProducts();
 renderCart();

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Athenea Store</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .admin { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+    .admin h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; color: var(--primary); }
+    .admin p.sub { color: var(--text-light); margin-bottom: 32px; }
+    .admin-form { background: var(--white); padding: 32px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 40px; }
+    .admin-form h2 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary); }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 0.85rem; font-weight: 500; color: var(--text); }
+    .form-group input, .form-group select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; transition: var(--transition); }
+    .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+    .form-actions { margin-top: 20px; display: flex; gap: 12px; }
+    .admin-list h2 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary); }
+    .admin-product { display: flex; align-items: center; gap: 16px; background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
+    .admin-product img { width: 60px; height: 70px; object-fit: cover; border-radius: 8px; }
+    .admin-product-info { flex: 1; }
+    .admin-product-info h3 { font-size: 0.95rem; margin-bottom: 4px; }
+    .admin-product-info p { font-size: 0.85rem; color: var(--text-light); }
+    .admin-product-info strong { color: var(--primary); }
+    .btn-delete { background: #ff4757; color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; transition: var(--transition); }
+    .btn-delete:hover { background: #e03e4e; }
+    .back-link { display: inline-block; margin-bottom: 24px; color: var(--accent); font-weight: 500; font-size: 0.9rem; }
+    .back-link:hover { text-decoration: underline; }
+    .empty-msg { text-align: center; color: var(--text-light); padding: 40px 0; }
+    @media (max-width: 576px) { .form-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+  <div class="topbar"><p>Panel de administración — Athenea Store</p></div>
+
+  <div class="admin">
+    <a href="/" class="back-link">← Volver a la tienda</a>
+    <h1>Panel de Administración</h1>
+    <p class="sub">Agrega y gestiona los productos de tu tienda.</p>
+
+    <div class="admin-form">
+      <h2>Agregar producto nuevo</h2>
+      <form id="productForm">
+        <div class="form-grid">
+          <div class="form-group full">
+            <label for="name">Nombre del producto</label>
+            <input type="text" id="name" required placeholder="Ej: Vestido Floral Verano">
+          </div>
+          <div class="form-group">
+            <label for="category">Categoría</label>
+            <select id="category" required>
+              <option value="mujer">Mujer</option>
+              <option value="hombre">Hombre</option>
+              <option value="accesorios">Accesorios</option>
+              <option value="calzado">Calzado</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="price">Precio ($)</label>
+            <input type="number" id="price" required min="0" placeholder="89900">
+          </div>
+          <div class="form-group">
+            <label for="oldPrice">Precio anterior (opcional)</label>
+            <input type="number" id="oldPrice" min="0" placeholder="120000">
+          </div>
+          <div class="form-group">
+            <label for="badge">Etiqueta (opcional)</label>
+            <input type="text" id="badge" placeholder="-25%, Nuevo, Top...">
+          </div>
+          <div class="form-group full">
+            <label for="image">URL de la imagen</label>
+            <input type="url" id="image" required placeholder="https://...">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">Agregar producto</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-list">
+      <h2>Productos actuales (<span id="productCount">0</span>)</h2>
+      <div id="adminProducts"></div>
+      <p class="empty-msg" id="emptyMsg" hidden>No hay productos en la base de datos.</p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script>
+    const toast = document.getElementById("toast");
+    const list = document.getElementById("adminProducts");
+    const countEl = document.getElementById("productCount");
+    const emptyMsg = document.getElementById("emptyMsg");
+
+    const fmt = (n) => "$" + Number(n).toLocaleString("es-CO");
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2500);
+    }
+
+    async function loadProducts() {
+      try {
+        const res = await fetch("/api/products");
+        const products = await res.json();
+        countEl.textContent = products.length;
+
+        if (products.length === 0) {
+          list.innerHTML = "";
+          emptyMsg.hidden = false;
+          return;
+        }
+
+        emptyMsg.hidden = true;
+        list.innerHTML = products.map(p => `
+          <div class="admin-product">
+            <img src="${p.image}" alt="${p.name}">
+            <div class="admin-product-info">
+              <h3>${p.name} ${p.badge ? `<span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:12px;font-size:0.7rem;">${p.badge}</span>` : ""}</h3>
+              <p>${p.category} · <strong>${fmt(p.price)}</strong> ${p.old_price ? `<del style="color:#999;">${fmt(p.old_price)}</del>` : ""}</p>
+            </div>
+            <button class="btn-delete" onclick="deleteProduct(${p.id})">Eliminar</button>
+          </div>
+        `).join("");
+      } catch (err) {
+        list.innerHTML = `<p class="empty-msg">Error al cargar productos: ${err.message}</p>`;
+      }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm("¿Eliminar este producto?")) return;
+      try {
+        await fetch(`/api/products/${id}`, { method: "DELETE" });
+        showToast("Producto eliminado");
+        loadProducts();
+      } catch (err) {
+        showToast("Error al eliminar");
+      }
+    }
+
+    document.getElementById("productForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const body = {
+        name: document.getElementById("name").value,
+        category: document.getElementById("category").value,
+        price: Number(document.getElementById("price").value),
+        old_price: document.getElementById("oldPrice").value ? Number(document.getElementById("oldPrice").value) : null,
+        badge: document.getElementById("badge").value || null,
+        image: document.getElementById("image").value
+      };
+      try {
+        const res = await fetch("/api/products", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error("Error al agregar");
+        showToast("Producto agregado con éxito");
+        e.target.reset();
+        loadProducts();
+      } catch (err) {
+        showToast("Error: " + err.message);
+      }
+    });
+
+    loadProducts();
+  </script>
+</body>
+</html>
