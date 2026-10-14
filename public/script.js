@@ -166,35 +166,50 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
   openPayment();
 });
 
+let siteSettings = {};
+
+async function loadSettings() {
+  try {
+    const res = await fetch("/api/settings");
+    const data = await res.json();
+    siteSettings = data && typeof data === "object" ? data : {};
+  } catch {
+    siteSettings = {};
+  }
+}
+
 const paymentMethods = {
   binance: {
     title: "Binance Pay",
-    rows: [
-      { label: "Binance ID", value: "TU_BINANCE_ID", copy: true },
-      { label: "Correo Binance", value: "tu_correo@binance.com", copy: true },
+    rows: () => [
+      { label: "Binance ID", value: siteSettings.binance_id || "—", copy: !!siteSettings.binance_id },
+      { label: "Correo Binance", value: siteSettings.binance_email || "—", copy: !!siteSettings.binance_email },
       { label: "Moneda", value: "USDT (BEP20 / TRC20)" }
     ],
-    note: "Una vez que realices el pago, envía el comprobante por WhatsApp al +57 300 123 4567 indicando tu nombre y el número de orden."
+    note: "Una vez que realices el pago, envía el comprobante por WhatsApp indicando tu nombre y el número de orden."
   },
   "pago-movil": {
     title: "Pago Móvil",
-    rows: [
-      { label: "Teléfono", value: "+58 412 123 4567", copy: true },
-      { label: "Banco", value: "Banco de Venezuela", copy: true },
-      { label: "Titular", value: "Tu Nombre Completo", copy: true },
-      { label: "Cédula / RIF", value: "V-00000000" }
-    ],
+    rows: () => {
+      const rate = parseFloat(siteSettings.exchange_rate) || 0;
+      const totalUSD = cart.reduce((sum, item) => {
+        const product = products.find((p) => p.id === item.id);
+        return sum + (product ? product.price * item.qty : 0);
+      }, 0);
+      const totalBs = rate > 0 ? totalUSD * rate : 0;
+      const rows = [
+        { label: "Teléfono", value: siteSettings.pago_movil_phone || "—", copy: !!siteSettings.pago_movil_phone },
+        { label: "Banco", value: siteSettings.pago_movil_bank || "—", copy: !!siteSettings.pago_movil_bank },
+        { label: "Titular", value: siteSettings.pago_movil_holder || "—", copy: !!siteSettings.pago_movil_holder },
+        { label: "Cédula / RIF", value: siteSettings.pago_movil_cedula || "—" }
+      ];
+      if (rate > 0) {
+        rows.push({ label: "Tasa del día", value: `${rate.toFixed(2)} Bs/$` });
+        rows.push({ label: "Total en Bs", value: `${totalBs.toLocaleString("es-VE", { minimumFractionDigits: 2 })} Bs` });
+      }
+      return rows;
+    },
     note: "Realiza el pago móvil desde tu aplicación bancaria. Envía el comprobante por WhatsApp con tu nombre y la referencia del pago."
-  },
-  transferencia: {
-    title: "Transferencia Bancaria",
-    rows: [
-      { label: "Banco", value: "Banco XYZ", copy: true },
-      { label: "Titular", value: "Tu Nombre Completo", copy: true },
-      { label: "Cuenta", value: "0134 0000 0000 0000 0000", copy: true },
-      { label: "RIF / ID", value: "J-00000000-0" }
-    ],
-    note: "Realiza la transferencia y envía el comprobante por WhatsApp. Tu pedido se procesará al confirmar el pago."
   }
 };
 
@@ -231,9 +246,10 @@ document.querySelectorAll(".payment-option").forEach((btn) => {
     document.querySelectorAll(".payment-option").forEach((b) => b.classList.remove("selected"));
     btn.classList.add("selected");
     const method = paymentMethods[btn.dataset.method];
+    const rows = method.rows();
     paymentDetailsContent.innerHTML = `
       <h4 style="margin-bottom:12px;font-size:1rem;">${method.title}</h4>
-      ${method.rows.map((r) => `
+      ${rows.map((r) => `
         <div class="payment-detail-row">
           <span>${r.label}</span>
           <div>
@@ -313,4 +329,5 @@ window.addEventListener("scroll", () => {
 });
 
 loadProducts();
+loadSettings();
 renderCart();

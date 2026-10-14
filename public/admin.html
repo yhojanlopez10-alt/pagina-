@@ -52,7 +52,72 @@
   <div class="admin">
     <a href="/" class="back-link">← Volver a la tienda</a>
     <h1>Panel de Administración</h1>
-    <p class="sub">Gestiona productos e imágenes de tu tienda.</p>
+    <p class="sub">Gestiona productos, categorías y métodos de pago de tu tienda.</p>
+
+    <!-- CONFIGURACIÓN DE PAGO -->
+    <div class="admin-section">
+      <h2>💰 Datos de pago y tasa</h2>
+      <div class="admin-form">
+        <h3>Tasa del día (USD → Bs)</h3>
+        <form id="rateForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="exchangeRate">Tasa de cambio (Bs por $1)</label>
+              <input type="number" id="exchangeRate" step="0.01" min="0" placeholder="Ej: 36.50">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Guardar tasa</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-form">
+        <h3>Binance Pay</h3>
+        <form id="binanceForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="binanceId">Binance ID</label>
+              <input type="text" id="binanceId" placeholder="Tu ID de Binance">
+            </div>
+            <div class="form-group">
+              <label for="binanceEmail">Correo Binance</label>
+              <input type="email" id="binanceEmail" placeholder="tu@email.com">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Guardar Binance</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="admin-form">
+        <h3>Pago Móvil</h3>
+        <form id="pagoMovilForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="pmPhone">Teléfono</label>
+              <input type="text" id="pmPhone" placeholder="+58 412 123 4567">
+            </div>
+            <div class="form-group">
+              <label for="pmBank">Banco</label>
+              <input type="text" id="pmBank" placeholder="Banco de Venezuela">
+            </div>
+            <div class="form-group">
+              <label for="pmHolder">Titular</label>
+              <input type="text" id="pmHolder" placeholder="Tu nombre completo">
+            </div>
+            <div class="form-group">
+              <label for="pmCedula">Cédula / RIF</label>
+              <input type="text" id="pmCedula" placeholder="V-00000000">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Guardar Pago Móvil</button>
+          </div>
+        </form>
+      </div>
+    </div>
 
     <!-- CATEGORÍAS -->
     <div class="admin-section">
@@ -401,8 +466,59 @@
       } catch (err) { showToast("Error: " + err.message); }
     });
 
+    // ========== SETTINGS ==========
+    async function loadSettings() {
+      try {
+        const res = await fetch("/api/settings");
+        const s = await res.json();
+        document.getElementById("exchangeRate").value = s.exchange_rate || "";
+        document.getElementById("binanceId").value = s.binance_id || "";
+        document.getElementById("binanceEmail").value = s.binance_email || "";
+        document.getElementById("pmPhone").value = s.pago_movil_phone || "";
+        document.getElementById("pmBank").value = s.pago_movil_bank || "";
+        document.getElementById("pmHolder").value = s.pago_movil_holder || "";
+        document.getElementById("pmCedula").value = s.pago_movil_cedula || "";
+      } catch {}
+    }
+
+    async function saveSettings(obj) {
+      try {
+        const res = await fetch("/api/settings", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(obj)
+        });
+        if (!res.ok) throw new Error("Error al guardar");
+        showToast("Guardado con éxito");
+      } catch (err) { showToast("Error: " + err.message); }
+    }
+
+    document.getElementById("rateForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      saveSettings({ exchange_rate: document.getElementById("exchangeRate").value });
+    });
+
+    document.getElementById("binanceForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      saveSettings({
+        binance_id: document.getElementById("binanceId").value,
+        binance_email: document.getElementById("binanceEmail").value
+      });
+    });
+
+    document.getElementById("pagoMovilForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      saveSettings({
+        pago_movil_phone: document.getElementById("pmPhone").value,
+        pago_movil_bank: document.getElementById("pmBank").value,
+        pago_movil_holder: document.getElementById("pmHolder").value,
+        pago_movil_cedula: document.getElementById("pmCedula").value
+      });
+    });
+
     loadCategories();
     loadProducts();
+    loadSettings();
   </script>
 </body>
 </html>
