@@ -1,16 +1,16 @@
 const products = [
-  { id: 1, name: "Vestido Floral Verano", category: "mujer", price: 89900, oldPrice: 120000, rating: 4.8, reviews: 124, badge: "-25%", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80" },
-  { id: 2, name: "Camisa Blanca Clásica", category: "hombre", price: 65000, oldPrice: null, rating: 4.6, reviews: 89, badge: null, image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80" },
-  { id: 3, name: "Bolso de Cuero Premium", category: "accesorios", price: 145000, oldPrice: 180000, rating: 4.9, reviews: 201, badge: "Top", image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80" },
-  { id: 4, name: "Zapatillas Urbanas Blancas", category: "calzado", price: 175000, oldPrice: null, rating: 4.7, reviews: 156, badge: null, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&q=80" },
-  { id: 5, name: "Jean Slim Azul Oscuro", category: "hombre", price: 95000, oldPrice: 115000, rating: 4.5, reviews: 78, badge: "-17%", image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80" },
-  { id: 6, name: "Blusa Seda Elegante", category: "mujer", price: 78000, oldPrice: null, rating: 4.8, reviews: 112, badge: "Nuevo", image: "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=500&q=80" },
-  { id: 7, name: "Reloj Minimalista", category: "accesorios", price: 195000, oldPrice: 250000, rating: 4.9, reviews: 234, badge: "Top", image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500&q=80" },
-  { id: 8, name: "Botas de Cuero café", category: "calzado", price: 210000, oldPrice: null, rating: 4.6, reviews: 67, badge: null, image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&q=80" },
-  { id: 9, name: "Chaqueta Jeans Oversize", category: "mujer", price: 125000, oldPrice: null, rating: 4.7, reviews: 93, badge: "Nuevo", image: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500&q=80" },
-  { id: 10, name: "Sneakers Running Pro", category: "calzado", price: 230000, oldPrice: 280000, rating: 4.8, reviews: 312, badge: "-18%", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500&q=80" },
-  { id: 11, name: "Gafas de Sol Aviador", category: "accesorios", price: 65000, oldPrice: null, rating: 4.4, reviews: 56, badge: null, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&q=80" },
-  { id: 12, name: "Polo Piqué Premium", category: "hombre", price: 55000, oldPrice: 72000, rating: 4.5, reviews: 145, badge: "-24%", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&q=80" }
+  { id: 1, name: "Vestido Floral Verano", category: "mujer", price: 89900, oldPrice: 120000, badge: "-25%", image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=80" },
+  { id: 2, name: "Camisa Blanca Clásica", category: "hombre", price: 65000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=500&q=80" },
+  { id: 3, name: "Bolso de Cuero Premium", category: "accesorios", price: 145000, oldPrice: 180000, badge: "Top", image: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=500&q=80" },
+  { id: 4, name: "Zapatillas Urbanas Blancas", category: "calzado", price: 175000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&q=80" },
+  { id: 5, name: "Jean Slim Azul Oscuro", category: "hombre", price: 95000, oldPrice: 115000, badge: "-17%", image: "https://images.unsplash.com/photo-1542272604-787c3835535d?w=500&q=80" },
+  { id: 6, name: "Blusa Seda Elegante", category: "mujer", price: 78000, oldPrice: null, badge: "Nuevo", image: "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?w=500&q=80" },
+  { id: 7, name: "Reloj Minimalista", category: "accesorios", price: 195000, oldPrice: 250000, badge: "Top", image: "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=500&q=80" },
+  { id: 8, name: "Botas de Cuero café", category: "calzado", price: 210000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=500&q=80" },
+  { id: 9, name: "Chaqueta Jeans Oversize", category: "mujer", price: 125000, oldPrice: null, badge: "Nuevo", image: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=500&q=80" },
+  { id: 10, name: "Sneakers Running Pro", category: "calzado", price: 230000, oldPrice: 280000, badge: "-18%", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=500&q=80" },
+  { id: 11, name: "Gafas de Sol Aviador", category: "accesorios", price: 65000, oldPrice: null, badge: null, image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&q=80" },
+  { id: 12, name: "Polo Piqué Premium", category: "hombre", price: 55000, oldPrice: 72000, badge: "-24%", image: "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=500&q=80" }
 ];
 
 const formatPrice = (n) => "$" + n.toLocaleString("es-CO");
@@ -54,7 +54,6 @@ function renderProducts() {
       <div class="product-card__body">
         <p class="product-card__category">${p.category}</p>
         <h3 class="product-card__name">${p.name}</h3>
-        <div class="product-card__rating">${"★".repeat(Math.round(p.rating))} <small style="color:#6b6b80">(${p.reviews})</small></div>
         <div class="product-card__footer">
           <div class="product-card__price">
             ${formatPrice(p.price)}

@@ -389,8 +389,6 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
   margin-bottom: 8px;
 }
 
-.product-card__rating { color: #f5a623; font-size: 0.85rem; margin-bottom: 10px; }
-
 .product-card__footer {
   display: flex;
   align-items: center;
