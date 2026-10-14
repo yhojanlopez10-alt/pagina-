@@ -67,20 +67,7 @@
         <h2 class="section__title">Compra por categoría</h2>
         <a href="#productos" class="section__link">Ver todo →</a>
       </div>
-      <div class="categories">
-        <a href="#productos" class="category-card" data-category="mujer" style="--img:url('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80')">
-          <span>Mujer</span>
-        </a>
-        <a href="#productos" class="category-card" data-category="hombre" style="--img:url('https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=500&q=80')">
-          <span>Hombre</span>
-        </a>
-        <a href="#productos" class="category-card" data-category="accesorios" style="--img:url('https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=500&q=80')">
-          <span>Accesorios</span>
-        </a>
-        <a href="#productos" class="category-card" data-category="ninos" style="--img:url('https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80')">
-          <span>Niños</span>
-        </a>
-      </div>
+      <div class="categories" id="categoriesGrid"></div>
     </div>
   </section>
 
@@ -90,10 +77,6 @@
         <h2 class="section__title">Nuestros productos</h2>
         <div class="filters" id="filters">
           <button class="filter-btn active" data-filter="todos">Todos</button>
-          <button class="filter-btn" data-filter="mujer">Mujer</button>
-          <button class="filter-btn" data-filter="hombre">Hombre</button>
-          <button class="filter-btn" data-filter="accesorios">Accesorios</button>
-          <button class="filter-btn" data-filter="ninos">Niños</button>
         </div>
       </div>
       <div class="products-grid" id="productsGrid"></div>

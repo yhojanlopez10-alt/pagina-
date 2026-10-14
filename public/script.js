@@ -1,4 +1,5 @@
 let products = [];
+let siteCategories = [];
 
 const formatPrice = (n) => "$" + n.toLocaleString("es-CO");
 
@@ -335,27 +336,6 @@ document.getElementById("paymentConfirm").addEventListener("click", () => {
   closePayment();
 });
 
-document.getElementById("filters").addEventListener("click", (e) => {
-  if (!e.target.classList.contains("filter-btn")) return;
-  document.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
-  e.target.classList.add("active");
-  currentFilter = e.target.dataset.filter;
-  renderProducts();
-});
-
-document.querySelectorAll(".category-card").forEach((card) => {
-  card.addEventListener("click", (e) => {
-    e.preventDefault();
-    const category = card.dataset.category;
-    currentFilter = category;
-    document.querySelectorAll(".filter-btn").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.filter === category);
-    });
-    renderProducts();
-    document.getElementById("productos").scrollIntoView({ behavior: "smooth" });
-  });
-});
-
 document.getElementById("searchInput").addEventListener("input", (e) => {
   currentSearch = e.target.value;
   renderProducts();
@@ -382,10 +362,61 @@ async function loadProducts() {
   renderProducts();
 }
 
+async function loadSiteCategories() {
+  try {
+    const res = await fetch("/api/categories");
+    const data = await res.json();
+    siteCategories = Array.isArray(data) ? data : [];
+  } catch {
+    siteCategories = [];
+  }
+  renderCategories();
+  renderFilters();
+}
+
+function renderCategories() {
+  const el = document.getElementById("categoriesGrid");
+  if (!el) return;
+  el.innerHTML = siteCategories.map((c) => `
+    <a href="#productos" class="category-card" data-category="${c.slug}" style="--img:url('${c.image || ''}')">
+      <span>${c.name}</span>
+    </a>
+  `).join("");
+
+  el.querySelectorAll(".category-card").forEach((card) => {
+    card.addEventListener("click", (e) => {
+      e.preventDefault();
+      const category = card.dataset.category;
+      currentFilter = category;
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.filter === category);
+      });
+      renderProducts();
+      document.getElementById("productos").scrollIntoView({ behavior: "smooth" });
+    });
+  });
+}
+
+function renderFilters() {
+  const el = document.getElementById("filters");
+  if (!el) return;
+  el.innerHTML = `<button class="filter-btn active" data-filter="todos">Todos</button>` +
+    siteCategories.map((c) => `<button class="filter-btn" data-filter="${c.slug}">${c.name}</button>`).join("");
+
+  el.addEventListener("click", (e) => {
+    if (!e.target.classList.contains("filter-btn")) return;
+    el.querySelectorAll(".filter-btn").forEach((btn) => btn.classList.remove("active"));
+    e.target.classList.add("active");
+    currentFilter = e.target.dataset.filter;
+    renderProducts();
+  });
+}
+
 window.addEventListener("scroll", () => {
   document.getElementById("header").classList.toggle("scrolled", window.scrollY > 10);
 });
 
 loadProducts();
+loadSiteCategories();
 loadSettings();
 renderCart();
