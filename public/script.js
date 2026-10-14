@@ -2,7 +2,7 @@ let products = [];
 
 const formatPrice = (n) => "$" + n.toLocaleString("es-CO");
 
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+let cart = [];
 let currentFilter = "todos";
 let currentSearch = "";
 
@@ -86,9 +86,7 @@ function updateQty(id, delta) {
   renderCart();
 }
 
-function saveCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
+function saveCart() {}
 
 function renderCart() {
   const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
