@@ -288,16 +288,16 @@ document.getElementById("paymentConfirm").addEventListener("click", () => {
   const rate = parseFloat(siteSettings.exchange_rate) || 0;
   const methodLabel = selectedPaymentMethod === "binance" ? "Binance Pay (USDT)" : "Pago Móvil";
 
-  let msg = "🛍️ *Nuevo pedido — Athenea Store*\n";
+  let msg = "*Nuevo pedido - Athenea Store*\n";
   msg += "━━━━━━━━━━━━━━━━\n\n";
-  msg += "📦 *Productos:*\n";
+  msg += "*Productos:*\n";
 
   cart.forEach((item, i) => {
     const p = products.find((x) => x.id === item.id);
     if (!p) return;
     const subtotal = p.price * item.qty;
     msg += `${i + 1}. ${p.name}\n`;
-    msg += `   Categoría: ${p.category}\n`;
+    msg += `   Categoria: ${p.category}\n`;
     msg += `   Cantidad: ${item.qty}\n`;
     msg += `   Precio: ${formatPrice(p.price)}\n`;
     msg += `   Subtotal: ${formatPrice(subtotal)}\n\n`;
@@ -309,17 +309,17 @@ document.getElementById("paymentConfirm").addEventListener("click", () => {
   }, 0);
 
   msg += "━━━━━━━━━━━━━━━━\n";
-  msg += `💰 *Total: ${formatPrice(totalUSD)} USD*\n`;
+  msg += `*Total: ${formatPrice(totalUSD)} USD*\n`;
 
   if (rate > 0) {
     const totalBs = totalUSD * rate;
     msg += ` Bs equivalentes: ${totalBs.toLocaleString("es-VE", { minimumFractionDigits: 2 })} Bs\n`;
-    msg += ` 📌 Tasa del día: ${rate.toFixed(2)} Bs/$\n`;
+    msg += ` Tasa del dia: ${rate.toFixed(2)} Bs/$\n`;
   }
 
-  msg += `\n💳 *Método de pago:* ${methodLabel}\n`;
+  msg += `\n*Metodo de pago:* ${methodLabel}\n`;
   msg += "━━━━━━━━━━━━━━━━\n";
-  msg += "\nEscribo una vez realizada la transferencia. 🙏";
+  msg += "\nEscribo una vez realizada la transferencia. Gracias!";
 
   const phone = (siteSettings.whatsapp_number || "").replace(/[^0-9]/g, "");
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
