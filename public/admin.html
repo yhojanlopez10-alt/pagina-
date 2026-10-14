@@ -10,8 +10,10 @@
     .admin { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
     .admin h1 { font-family: 'Playfair Display', serif; font-size: 2rem; margin-bottom: 8px; color: var(--primary); }
     .admin p.sub { color: var(--text-light); margin-bottom: 32px; }
-    .admin-form { background: var(--white); padding: 32px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 40px; }
-    .admin-form h2 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary); }
+    .admin-section { margin-bottom: 48px; }
+    .admin-section > h2 { font-size: 1.3rem; color: var(--primary); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid var(--border); }
+    .admin-form { background: var(--white); padding: 28px; border-radius: var(--radius); box-shadow: var(--shadow); margin-bottom: 24px; }
+    .admin-form h3 { font-size: 1.05rem; margin-bottom: 16px; color: var(--primary); }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-group { display: flex; flex-direction: column; gap: 6px; }
     .form-group.full { grid-column: 1 / -1; }
@@ -19,19 +21,28 @@
     .form-group input, .form-group select { padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; font-family: inherit; outline: none; transition: var(--transition); }
     .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
     .form-actions { margin-top: 20px; display: flex; gap: 12px; }
-    .admin-list h2 { font-size: 1.2rem; margin-bottom: 20px; color: var(--primary); }
-    .admin-product { display: flex; align-items: center; gap: 16px; background: var(--white); padding: 16px; border-radius: var(--radius); box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 12px; }
-    .admin-product img { width: 60px; height: 70px; object-fit: cover; border-radius: 8px; }
-    .admin-product-info { flex: 1; }
-    .admin-product-info h3 { font-size: 0.95rem; margin-bottom: 4px; }
-    .admin-product-info p { font-size: 0.85rem; color: var(--text-light); }
-    .admin-product-info strong { color: var(--primary); }
+    .admin-list { display: flex; flex-direction: column; gap: 12px; }
+    .admin-item { display: flex; align-items: center; gap: 16px; background: var(--white); padding: 14px 18px; border-radius: var(--radius); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .admin-item img { width: 56px; height: 64px; object-fit: cover; border-radius: 8px; background: var(--bg-alt); }
+    .admin-item-info { flex: 1; }
+    .admin-item-info h3 { font-size: 0.95rem; margin-bottom: 2px; }
+    .admin-item-info p { font-size: 0.8rem; color: var(--text-light); }
+    .admin-item-info strong { color: var(--primary); }
+    .admin-item-actions { display: flex; gap: 8px; }
+    .btn-edit { background: var(--primary); color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; transition: var(--transition); }
+    .btn-edit:hover { background: #2d2d4a; }
     .btn-delete { background: #ff4757; color: white; padding: 8px 16px; border-radius: 8px; font-size: 0.8rem; transition: var(--transition); }
     .btn-delete:hover { background: #e03e4e; }
     .back-link { display: inline-block; margin-bottom: 24px; color: var(--accent); font-weight: 500; font-size: 0.9rem; }
     .back-link:hover { text-decoration: underline; }
-    .empty-msg { text-align: center; color: var(--text-light); padding: 40px 0; }
-    @media (max-width: 576px) { .form-grid { grid-template-columns: 1fr; } }
+    .empty-msg { text-align: center; color: var(--text-light); padding: 30px 0; }
+    .badge-tag { background: var(--accent); color: #fff; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; margin-left: 6px; }
+    .image-upload-area { display: flex; align-items: center; gap: 12px; }
+    .image-upload-area img { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 2px dashed var(--border); }
+    .image-upload-area .upload-btn { background: var(--bg-alt); border: 2px dashed var(--border); padding: 10px 16px; border-radius: 8px; font-size: 0.85rem; cursor: pointer; transition: var(--transition); color: var(--text-light); }
+    .image-upload-area .upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .editing { border-left: 4px solid var(--accent); background: #fff8f9; }
+    @media (max-width: 576px) { .form-grid { grid-template-columns: 1fr; } .admin-item { flex-wrap: wrap; } }
   </style>
 </head>
 <body>
@@ -41,51 +52,82 @@
   <div class="admin">
     <a href="/" class="back-link">← Volver a la tienda</a>
     <h1>Panel de Administración</h1>
-    <p class="sub">Agrega y gestiona los productos de tu tienda.</p>
+    <p class="sub">Gestiona productos e imágenes de tu tienda.</p>
 
-    <div class="admin-form">
-      <h2>Agregar producto nuevo</h2>
-      <form id="productForm">
-        <div class="form-grid">
-          <div class="form-group full">
-            <label for="name">Nombre del producto</label>
-            <input type="text" id="name" required placeholder="Ej: Vestido Floral Verano">
+    <!-- CATEGORÍAS -->
+    <div class="admin-section">
+      <h2>📂 Categorías</h2>
+      <div class="admin-form">
+        <h3 id="catFormTitle">Agregar categoría</h3>
+        <form id="catForm">
+          <input type="hidden" id="catEditId">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="catName">Nombre</label>
+              <input type="text" id="catName" required placeholder="Ej: Deportivo">
+            </div>
+            <div class="form-group">
+              <label>Imagen</label>
+              <div class="image-upload-area">
+                <img id="catImagePreview" src="" alt="" style="display:none;">
+                <label class="upload-btn" for="catImageFile">📎 Subir imagen</label>
+                <input type="file" id="catImageFile" accept="image/*" style="display:none;">
+              </div>
+              <input type="hidden" id="catImage">
+            </div>
           </div>
-          <div class="form-group">
-            <label for="category">Categoría</label>
-            <select id="category" required>
-              <option value="mujer">Mujer</option>
-              <option value="hombre">Hombre</option>
-              <option value="accesorios">Accesorios</option>
-              <option value="calzado">Calzado</option>
-            </select>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary" id="catSubmitBtn">Agregar categoría</button>
+            <button type="button" class="btn btn--text" id="catCancelBtn" style="display:none;">Cancelar</button>
           </div>
-          <div class="form-group">
-            <label for="price">Precio ($)</label>
-            <input type="number" id="price" required min="0" placeholder="89900">
-          </div>
-          <div class="form-group">
-            <label for="oldPrice">Precio anterior (opcional)</label>
-            <input type="number" id="oldPrice" min="0" placeholder="120000">
-          </div>
-          <div class="form-group">
-            <label for="badge">Etiqueta (opcional)</label>
-            <input type="text" id="badge" placeholder="-25%, Nuevo, Top...">
-          </div>
-          <div class="form-group full">
-            <label for="image">URL de la imagen</label>
-            <input type="url" id="image" required placeholder="https://...">
-          </div>
-        </div>
-        <div class="form-actions">
-          <button type="submit" class="btn btn--primary">Agregar producto</button>
-        </div>
-      </form>
+        </form>
+      </div>
+      <div class="admin-list" id="catList"></div>
+      <p class="empty-msg" id="catEmpty" hidden>No hay categorías.</p>
     </div>
 
-    <div class="admin-list">
-      <h2>Productos actuales (<span id="productCount">0</span>)</h2>
-      <div id="adminProducts"></div>
+    <!-- PRODUCTOS -->
+    <div class="admin-section">
+      <h2>🛍️ Productos</h2>
+      <div class="admin-form">
+        <h3 id="prodFormTitle">Agregar producto</h3>
+        <form id="productForm">
+          <input type="hidden" id="prodEditId">
+          <div class="form-grid">
+            <div class="form-group full">
+              <label for="name">Nombre</label>
+              <input type="text" id="name" required placeholder="Ej: Vestido Floral Verano">
+            </div>
+            <div class="form-group">
+              <label for="category">Categoría</label>
+              <select id="category" required></select>
+            </div>
+            <div class="form-group">
+              <label for="price">Precio ($)</label>
+              <input type="number" id="price" required min="0" placeholder="89900">
+            </div>
+            <div class="form-group">
+              <label for="badge">Etiqueta (opcional)</label>
+              <input type="text" id="badge" placeholder="-25%, Nuevo, Top...">
+            </div>
+            <div class="form-group full">
+              <label>Imagen del producto</label>
+              <div class="image-upload-area">
+                <img id="prodImagePreview" src="" alt="" style="display:none;">
+                <label class="upload-btn" for="prodImageFile">📎 Subir imagen</label>
+                <input type="file" id="prodImageFile" accept="image/*" style="display:none;">
+              </div>
+              <input type="hidden" id="image">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary" id="prodSubmitBtn">Agregar producto</button>
+            <button type="button" class="btn btn--text" id="prodCancelBtn" style="display:none;">Cancelar</button>
+          </div>
+        </form>
+      </div>
+      <p style="font-size:0.9rem;color:var(--text-light);margin-bottom:16px;">Productos actuales (<span id="productCount">0</span>)</p>
+      <div class="admin-list" id="adminProducts"></div>
       <p class="empty-msg" id="emptyMsg" hidden>No hay productos en la base de datos.</p>
     </div>
   </div>
@@ -94,10 +136,6 @@
 
   <script>
     const toast = document.getElementById("toast");
-    const list = document.getElementById("adminProducts");
-    const countEl = document.getElementById("productCount");
-    const emptyMsg = document.getElementById("emptyMsg");
-
     const fmt = (n) => "$" + Number(n).toLocaleString("es-CO");
 
     function showToast(msg) {
@@ -106,33 +144,190 @@
       setTimeout(() => toast.classList.remove("show"), 2500);
     }
 
+    async function uploadImage(file) {
+      const fd = new FormData();
+      fd.append("image", file);
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!res.ok) throw new Error("Error al subir imagen");
+      return (await res.json()).url;
+    }
+
+    // ========== CATEGORÍAS ==========
+    const catList = document.getElementById("catList");
+    const catEmpty = document.getElementById("catEmpty");
+    const catForm = document.getElementById("catForm");
+    const catEditId = document.getElementById("catEditId");
+    const catName = document.getElementById("catName");
+    const catImage = document.getElementById("catImage");
+    const catImagePreview = document.getElementById("catImagePreview");
+    const catSubmitBtn = document.getElementById("catSubmitBtn");
+    const catCancelBtn = document.getElementById("catCancelBtn");
+    const catFormTitle = document.getElementById("catFormTitle");
+
+    let categories = [];
+
+    async function loadCategories() {
+      try {
+        const res = await fetch("/api/categories");
+        categories = await res.json();
+        catList.innerHTML = categories.length === 0 ? "" : categories.map(c => `
+          <div class="admin-item" id="cat-${c.id}">
+            <img src="${c.image || ''}" alt="${c.name}" onerror="this.style.display='none'">
+            <div class="admin-item-info">
+              <h3>${c.name}</h3>
+              <p>/${c.slug}</p>
+            </div>
+            <div class="admin-item-actions">
+              <button class="btn-edit" onclick="editCategory(${c.id})">Editar</button>
+              <button class="btn-delete" onclick="deleteCategory(${c.id})">Eliminar</button>
+            </div>
+          </div>
+        `).join("");
+        catEmpty.hidden = categories.length > 0;
+        fillCategorySelect();
+      } catch {
+        catList.innerHTML = `<p class="empty-msg">Error al cargar categorías</p>`;
+      }
+    }
+
+    function fillCategorySelect() {
+      const sel = document.getElementById("category");
+      const current = sel.value;
+      sel.innerHTML = categories.map(c => `<option value="${c.slug}">${c.name}</option>`).join("");
+      if (current) sel.value = current;
+    }
+
+    function editCategory(id) {
+      const c = categories.find(x => x.id === id);
+      if (!c) return;
+      catEditId.value = c.id;
+      catName.value = c.name;
+      catImage.value = c.image || "";
+      if (c.image) { catImagePreview.src = c.image; catImagePreview.style.display = "block"; }
+      catSubmitBtn.textContent = "Guardar cambios";
+      catCancelBtn.style.display = "inline-block";
+      catFormTitle.textContent = "Editar categoría";
+      catForm.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function resetCatForm() {
+      catEditId.value = "";
+      catName.value = "";
+      catImage.value = "";
+      catImagePreview.style.display = "none";
+      catSubmitBtn.textContent = "Agregar categoría";
+      catCancelBtn.style.display = "none";
+      catFormTitle.textContent = "Agregar categoría";
+    }
+
+    catCancelBtn.addEventListener("click", resetCatForm);
+
+    catForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const body = { name: catName.value, image: catImage.value || null };
+      const id = catEditId.value;
+      try {
+        const res = await fetch(id ? `/api/categories/${id}` : "/api/categories", {
+          method: id ? "PUT" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error("Error");
+        showToast(id ? "Categoría actualizada" : "Categoría agregada");
+        resetCatForm();
+        loadCategories();
+      } catch (err) {
+        showToast("Error: " + err.message);
+      }
+    });
+
+    async function deleteCategory(id) {
+      if (!confirm("¿Eliminar esta categoría? Los productos que la usen no se eliminarán.")) return;
+      try {
+        await fetch(`/api/categories/${id}`, { method: "DELETE" });
+        showToast("Categoría eliminada");
+        loadCategories();
+      } catch { showToast("Error al eliminar"); }
+    }
+
+    document.getElementById("catImageFile").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        showToast("Subiendo imagen...");
+        const { url } = await uploadImage(file);
+        catImage.value = url;
+        catImagePreview.src = url;
+        catImagePreview.style.display = "block";
+        showToast("Imagen subida");
+      } catch (err) { showToast(err.message); }
+    });
+
+    // ========== PRODUCTOS ==========
+    const list = document.getElementById("adminProducts");
+    const countEl = document.getElementById("productCount");
+    const emptyMsg = document.getElementById("emptyMsg");
+    const prodForm = document.getElementById("productForm");
+    const prodEditId = document.getElementById("prodEditId");
+    const prodSubmitBtn = document.getElementById("prodSubmitBtn");
+    const prodCancelBtn = document.getElementById("prodCancelBtn");
+    const prodFormTitle = document.getElementById("prodFormTitle");
+    const prodImagePreview = document.getElementById("prodImagePreview");
+
     async function loadProducts() {
       try {
         const res = await fetch("/api/products");
         const products = await res.json();
         countEl.textContent = products.length;
-
         if (products.length === 0) {
           list.innerHTML = "";
           emptyMsg.hidden = false;
           return;
         }
-
         emptyMsg.hidden = true;
         list.innerHTML = products.map(p => `
-          <div class="admin-product">
-            <img src="${p.image}" alt="${p.name}">
-            <div class="admin-product-info">
-              <h3>${p.name} ${p.badge ? `<span style="background:var(--accent);color:#fff;padding:2px 8px;border-radius:12px;font-size:0.7rem;">${p.badge}</span>` : ""}</h3>
-              <p>${p.category} · <strong>${fmt(p.price)}</strong> ${p.old_price ? `<del style="color:#999;">${fmt(p.old_price)}</del>` : ""}</p>
+          <div class="admin-item">
+            <img src="${p.image}" alt="${p.name}" onerror="this.style.display='none'">
+            <div class="admin-item-info">
+              <h3>${p.name} ${p.badge ? `<span class="badge-tag">${p.badge}</span>` : ""}</h3>
+              <p>${p.category} · <strong>${fmt(p.price)}</strong></p>
             </div>
-            <button class="btn-delete" onclick="deleteProduct(${p.id})">Eliminar</button>
+            <div class="admin-item-actions">
+              <button class="btn-edit" onclick='editProduct(${JSON.stringify(p)})'>Editar</button>
+              <button class="btn-delete" onclick="deleteProduct(${p.id})">Eliminar</button>
+            </div>
           </div>
         `).join("");
       } catch (err) {
-        list.innerHTML = `<p class="empty-msg">Error al cargar productos: ${err.message}</p>`;
+        list.innerHTML = `<p class="empty-msg">Error: ${err.message}</p>`;
       }
     }
+
+    function editProduct(p) {
+      prodEditId.value = p.id;
+      document.getElementById("name").value = p.name;
+      document.getElementById("category").value = p.category;
+      document.getElementById("price").value = p.price;
+      document.getElementById("badge").value = p.badge || "";
+      document.getElementById("image").value = p.image || "";
+      if (p.image) { prodImagePreview.src = p.image; prodImagePreview.style.display = "block"; }
+      prodSubmitBtn.textContent = "Guardar cambios";
+      prodCancelBtn.style.display = "inline-block";
+      prodFormTitle.textContent = "Editar producto";
+      prodForm.scrollIntoView({ behavior: "smooth" });
+    }
+
+    function resetProdForm() {
+      prodEditId.value = "";
+      prodForm.reset();
+      document.getElementById("image").value = "";
+      prodImagePreview.style.display = "none";
+      prodSubmitBtn.textContent = "Agregar producto";
+      prodCancelBtn.style.display = "none";
+      prodFormTitle.textContent = "Agregar producto";
+    }
+
+    prodCancelBtn.addEventListener("click", resetProdForm);
 
     async function deleteProduct(id) {
       if (!confirm("¿Eliminar este producto?")) return;
@@ -140,36 +335,46 @@
         await fetch(`/api/products/${id}`, { method: "DELETE" });
         showToast("Producto eliminado");
         loadProducts();
-      } catch (err) {
-        showToast("Error al eliminar");
-      }
+      } catch { showToast("Error al eliminar"); }
     }
 
-    document.getElementById("productForm").addEventListener("submit", async (e) => {
+    document.getElementById("prodImageFile").addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      try {
+        showToast("Subiendo imagen...");
+        const { url } = await uploadImage(file);
+        document.getElementById("image").value = url;
+        prodImagePreview.src = url;
+        prodImagePreview.style.display = "block";
+        showToast("Imagen subida");
+      } catch (err) { showToast(err.message); }
+    });
+
+    prodForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       const body = {
         name: document.getElementById("name").value,
         category: document.getElementById("category").value,
         price: Number(document.getElementById("price").value),
-        old_price: document.getElementById("oldPrice").value ? Number(document.getElementById("oldPrice").value) : null,
         badge: document.getElementById("badge").value || null,
         image: document.getElementById("image").value
       };
+      const id = prodEditId.value;
       try {
-        const res = await fetch("/api/products", {
-          method: "POST",
+        const res = await fetch(id ? `/api/products/${id}` : "/api/products", {
+          method: id ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(body)
         });
-        if (!res.ok) throw new Error("Error al agregar");
-        showToast("Producto agregado con éxito");
-        e.target.reset();
+        if (!res.ok) throw new Error("Error al guardar");
+        showToast(id ? "Producto actualizado" : "Producto agregado");
+        resetProdForm();
         loadProducts();
-      } catch (err) {
-        showToast("Error: " + err.message);
-      }
+      } catch (err) { showToast("Error: " + err.message); }
     });
 
+    loadCategories();
     loadProducts();
   </script>
 </body>

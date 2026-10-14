@@ -44,7 +44,6 @@ function renderProducts() {
         <div class="product-card__footer">
           <div class="product-card__price">
             ${formatPrice(p.price)}
-            ${p.old_price ? `<del>${formatPrice(p.old_price)}</del>` : ""}
           </div>
           <button class="add-to-cart" onclick="addToCart(${p.id})" aria-label="Agregar al carrito">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4H6z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -164,9 +163,102 @@ document.getElementById("checkoutBtn").addEventListener("click", () => {
     showToast("Tu carrito está vacío");
     return;
   }
-  showToast("¡Gracias por tu compra! Te contactaremos pronto.");
+  openPayment();
+});
+
+const paymentMethods = {
+  binance: {
+    title: "Binance Pay",
+    rows: [
+      { label: "Binance ID", value: "TU_BINANCE_ID", copy: true },
+      { label: "Correo Binance", value: "tu_correo@binance.com", copy: true },
+      { label: "Moneda", value: "USDT (BEP20 / TRC20)" }
+    ],
+    note: "Una vez que realices el pago, envía el comprobante por WhatsApp al +57 300 123 4567 indicando tu nombre y el número de orden."
+  },
+  "pago-movil": {
+    title: "Pago Móvil",
+    rows: [
+      { label: "Teléfono", value: "+58 412 123 4567", copy: true },
+      { label: "Banco", value: "Banco de Venezuela", copy: true },
+      { label: "Titular", value: "Tu Nombre Completo", copy: true },
+      { label: "Cédula / RIF", value: "V-00000000" }
+    ],
+    note: "Realiza el pago móvil desde tu aplicación bancaria. Envía el comprobante por WhatsApp con tu nombre y la referencia del pago."
+  },
+  transferencia: {
+    title: "Transferencia Bancaria",
+    rows: [
+      { label: "Banco", value: "Banco XYZ", copy: true },
+      { label: "Titular", value: "Tu Nombre Completo", copy: true },
+      { label: "Cuenta", value: "0134 0000 0000 0000 0000", copy: true },
+      { label: "RIF / ID", value: "J-00000000-0" }
+    ],
+    note: "Realiza la transferencia y envía el comprobante por WhatsApp. Tu pedido se procesará al confirmar el pago."
+  }
+};
+
+const paymentOverlay = document.getElementById("paymentOverlay");
+const paymentModal = document.getElementById("paymentModal");
+const paymentTotal = document.getElementById("paymentTotal");
+const paymentDetails = document.getElementById("paymentDetails");
+const paymentDetailsContent = document.getElementById("paymentDetailsContent");
+
+function openPayment() {
+  const totalPrice = cart.reduce((sum, item) => {
+    const product = products.find((p) => p.id === item.id);
+    return sum + (product ? product.price * item.qty : 0);
+  }, 0);
+  paymentTotal.textContent = formatPrice(totalPrice);
+  paymentDetails.hidden = true;
+  document.querySelectorAll(".payment-option").forEach((btn) => btn.classList.remove("selected"));
+  paymentOverlay.classList.add("active");
+  paymentModal.classList.add("active");
+  document.body.style.overflow = "hidden";
+}
+
+function closePayment() {
+  paymentOverlay.classList.remove("active");
+  paymentModal.classList.remove("active");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("paymentClose").addEventListener("click", closePayment);
+paymentOverlay.addEventListener("click", closePayment);
+
+document.querySelectorAll(".payment-option").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".payment-option").forEach((b) => b.classList.remove("selected"));
+    btn.classList.add("selected");
+    const method = paymentMethods[btn.dataset.method];
+    paymentDetailsContent.innerHTML = `
+      <h4 style="margin-bottom:12px;font-size:1rem;">${method.title}</h4>
+      ${method.rows.map((r) => `
+        <div class="payment-detail-row">
+          <span>${r.label}</span>
+          <div>
+            <strong>${r.value}</strong>
+            ${r.copy ? `<button class="copy-btn" onclick="copyText('${r.value}', this)">Copiar</button>` : ""}
+          </div>
+        </div>
+      `).join("")}
+      <p class="payment-note">${method.note}</p>
+    `;
+    paymentDetails.hidden = false;
+  });
+});
+
+function copyText(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = "¡Copiado!";
+    setTimeout(() => (btn.textContent = "Copiar"), 1500);
+  });
+}
+
+document.getElementById("paymentConfirm").addEventListener("click", () => {
+  showToast("¡Pago registrado! Te contactaremos para confirmar tu pedido.");
   clearCart();
-  closeCart();
+  closePayment();
 });
 
 document.getElementById("filters").addEventListener("click", (e) => {

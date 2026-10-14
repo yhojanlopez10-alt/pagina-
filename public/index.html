@@ -166,7 +166,7 @@
       <div class="container">
         <p>© 2026 Athenea Store. Todos los derechos reservados.</p>
         <div class="payment">
-          <span>💳 Visa</span><span>💳 Mastercard</span><span>💳 PayPal</span><span>💳 Nexo</span>
+          <span>💳 Visa</span><span>💳 Mastercard</span><span>🟡 Binance</span><span>📱 Pago Móvil</span>
         </div>
       </div>
     </div>
@@ -190,6 +190,48 @@
   </aside>
 
   <div class="toast" id="toast" role="status"></div>
+
+  <div class="payment-overlay" id="paymentOverlay"></div>
+  <div class="payment-modal" id="paymentModal">
+    <div class="payment-modal__head">
+      <h3>Método de pago</h3>
+      <button class="icon-btn" id="paymentClose" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="payment-modal__body">
+      <p class="payment-total">Total a pagar: <strong id="paymentTotal">$0</strong></p>
+
+      <div class="payment-options">
+        <button class="payment-option" data-method="binance">
+          <span class="payment-option__icon">🟡</span>
+          <div>
+            <strong>Binance Pay</strong>
+            <p>Paga con USDT o BNB desde tu cuenta Binance</p>
+          </div>
+        </button>
+
+        <button class="payment-option" data-method="pago-movil">
+          <span class="payment-option__icon">📱</span>
+          <div>
+            <strong>Pago Móvil</strong>
+            <p>Transferencia desde tu banco móvil (Venezuela)</p>
+          </div>
+        </button>
+
+        <button class="payment-option" data-method="transferencia">
+          <span class="payment-option__icon">🏦</span>
+          <div>
+            <strong>Transferencia bancaria</strong>
+            <p>Depósito o transferencia directa</p>
+          </div>
+        </button>
+      </div>
+
+      <div class="payment-details" id="paymentDetails" hidden>
+        <div class="payment-details__content" id="paymentDetailsContent"></div>
+        <button class="btn btn--primary btn--block" id="paymentConfirm">Ya realicé el pago</button>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
