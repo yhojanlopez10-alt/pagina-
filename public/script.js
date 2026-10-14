@@ -218,12 +218,6 @@ document.querySelectorAll(".nav__link").forEach((link) => {
   });
 });
 
-document.getElementById("newsletterForm").addEventListener("submit", (e) => {
-  e.preventDefault();
-  showToast("¡Suscripción exitosa! Revisa tu correo.");
-  e.target.reset();
-});
-
 window.addEventListener("scroll", () => {
   document.getElementById("header").classList.toggle("scrolled", window.scrollY > 10);
 });
