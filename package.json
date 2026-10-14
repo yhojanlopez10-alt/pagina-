@@ -1,7 +1,7 @@
 {
-  "name": "lumen-style",
+  "name": "athenea-store",
   "version": "1.0.0",
-  "description": "Tienda de ropa online LumenStyle",
+  "description": "Tienda de ropa online Athenea Store",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
