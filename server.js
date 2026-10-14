@@ -159,7 +159,7 @@ async function init() {
         { name: "Mujer", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&q=80" },
         { name: "Hombre", image: "https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?w=500&q=80" },
         { name: "Accesorios", image: "https://images.unsplash.com/photo-1523170335258-f5ed11844a49?w=500&q=80" },
-        { name: "Calzado", image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=500&q=80" }
+        { name: "Niños", image: "https://images.unsplash.com/photo-1519238263530-99bdd11df2ea?w=500&q=80" }
       ];
       for (const c of defaults) {
         await pool.query("INSERT INTO categories (name, slug, image) VALUES ($1,$2,$3) ON CONFLICT (slug) DO NOTHING", [c.name, c.name.toLowerCase(), c.image]);
