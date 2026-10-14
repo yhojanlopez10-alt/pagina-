@@ -557,7 +557,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .footer__grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1fr 1fr;
   gap: 40px;
   padding-bottom: 40px;
 }
