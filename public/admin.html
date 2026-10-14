@@ -47,6 +47,19 @@
 </head>
 <body>
 
+  <div class="login-overlay" id="loginOverlay">
+    <div class="login-box">
+      <h2>🔐 Athenea Store</h2>
+      <p>Ingresa la contraseña para acceder</p>
+      <form id="loginForm">
+        <input type="password" id="loginPassword" placeholder="Contraseña" required autofocus>
+        <button type="submit" class="btn btn--primary btn--block">Entrar</button>
+      </form>
+      <p class="login-error" id="loginError" hidden>Contraseña incorrecta</p>
+    </div>
+  </div>
+
+  <div id="adminContent" style="display:none;">
   <div class="topbar"><p>Panel de administración — Athenea Store</p></div>
 
   <div class="admin">
@@ -519,6 +532,73 @@
     loadCategories();
     loadProducts();
     loadSettings();
+  </script>
+  </div>
+
+  <style>
+    .login-overlay {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #1a1a2e, #16213e);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+    .login-box {
+      background: var(--white);
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      width: 360px;
+      max-width: 90vw;
+      text-align: center;
+    }
+    .login-box h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; margin-bottom: 8px; color: var(--primary); }
+    .login-box p { color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px; }
+    .login-box input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      text-align: center;
+      outline: none;
+      margin-bottom: 16px;
+      font-family: inherit;
+      transition: var(--transition);
+    }
+    .login-box input:focus { border-color: var(--accent); }
+    .login-error { color: #ff4757; font-size: 0.85rem; margin-top: 12px; }
+  </style>
+
+  <script>
+    const ADMIN_PASSWORD = "athenea123";
+    const loginOverlay = document.getElementById("loginOverlay");
+    const adminContent = document.getElementById("adminContent");
+
+    function checkLogin() {
+      if (sessionStorage.getItem("adminAuth") === "true") {
+        loginOverlay.style.display = "none";
+        adminContent.style.display = "block";
+      }
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const pass = document.getElementById("loginPassword").value;
+      if (pass === ADMIN_PASSWORD) {
+        sessionStorage.setItem("adminAuth", "true");
+        loginOverlay.style.display = "none";
+        adminContent.style.display = "block";
+      } else {
+        document.getElementById("loginError").hidden = false;
+        document.getElementById("loginPassword").value = "";
+        document.getElementById("loginPassword").focus();
+      }
+    });
+
+    checkLogin();
   </script>
 </body>
 </html>

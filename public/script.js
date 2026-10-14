@@ -176,6 +176,12 @@ async function loadSettings() {
   } catch {
     siteSettings = {};
   }
+  const rate = parseFloat(siteSettings.exchange_rate);
+  if (rate > 0) {
+    const el = document.getElementById("topbarRate");
+    el.textContent = `💵 Tasa del día: ${rate.toFixed(2)} Bs/$`;
+    el.hidden = false;
+  }
 }
 
 const paymentMethods = {
